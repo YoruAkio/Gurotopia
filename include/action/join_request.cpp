@@ -9,7 +9,7 @@
 #if defined(_MSC_VER)
     using namespace std::chrono;
 #else
-    using namespace std::chrono::_V2;
+    using namespace std::chrono;
 #endif
 using namespace std::literals::chrono_literals;
 
@@ -41,8 +41,9 @@ void action::join_request(ENetEvent& event, const std::string& header, const std
             const unsigned main_door = ransuu[{2, 100 * 60 / 100 - 4}];
             std::vector<block> blocks(100 * 60, block{0, 0});
             
-            for (auto &&[i, block] : blocks | std::views::enumerate)
+            for (std::size_t i = 0; i < blocks.size(); ++i)
             {
+                auto& block = blocks[i];
                 if (i >= cord(0, 37))
                 {
                     block.bg = 14; // cave background

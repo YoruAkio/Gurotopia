@@ -11,7 +11,7 @@
 #if defined(_MSC_VER)
     using namespace std::chrono;
 #else
-    using namespace std::chrono::_V2;
+    using namespace std::chrono;
 #endif
 using namespace std::literals::chrono_literals;
 
@@ -25,7 +25,7 @@ void tile_change(ENetEvent& event, state state)
         if (w == worlds.end()) return;
 
         if ((w->second.owner != 0 && !w->second._public && peer->role == role::PLAYER) &&
-            (peer->user_id != w->second.owner && !std::ranges::contains(w->second.admin, peer->user_id))) return;
+            (peer->user_id != w->second.owner && std::find(w->second.admin.begin(), w->second.admin.end(), peer->user_id) == w->second.admin.end())) return;
 
         block &block = w->second.blocks[cord(state.punch[0], state.punch[1])];
         item &item = (state.id != 32 && state.id != 18) ? items[state.id] : (block.fg != 0) ? items[block.fg] : items[block.bg];

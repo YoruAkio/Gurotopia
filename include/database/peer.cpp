@@ -6,7 +6,7 @@
 #if defined(_MSC_VER)
     using namespace std::chrono;
 #else
-    using namespace std::chrono::_V2;
+    using namespace std::chrono;
 #endif
 
 short peer::emplace(slot s) 

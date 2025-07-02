@@ -1,17 +1,23 @@
 CXX = g++
 CXXFLAGS = -std=c++2b -g -Iinclude -Iinclude/ssl -MMD -MP -MF $(BUILD_DIR)/$*.d
 
-LIBS := -L./include/enet/lib -L./include/mimalloc/lib -L./include/sqlite/lib -L./include/ssl/openssl/lib -L./include/ssl/crypto/lib
-
 # Build directory
 BUILD_DIR := build
 
 ifeq ($(OS),Windows_NT)
+    LIBS := -L./include/enet/lib -L./include/mimalloc/lib -L./include/sqlite/lib -L./include/ssl/openssl/lib -L./include/ssl/crypto/lib
     LIBS += -lssl_32 -lcrypto_32 -lenet_32 -lws2_32 -ladvapi32 -lcrypt32 -lwinmm -lmimalloc_32 -lsqlite3_32
     TARGET_NAME := main.exe
 else
+    # Use system libraries on macOS/Linux
+    LIBS := -L/usr/local/lib -I/usr/local/include
     LIBS += -lssl -lcrypto -lenet -lmimalloc -lsqlite3
     TARGET_NAME := main.out
+    # Add Homebrew paths for macOS
+    ifeq ($(shell uname),Darwin)
+        CXXFLAGS += -I/usr/local/include -I/usr/local/opt/openssl@3/include
+        LIBS += -L/usr/local/opt/openssl@3/lib
+    endif
 endif
 
 TARGET := $(BUILD_DIR)/$(TARGET_NAME)
