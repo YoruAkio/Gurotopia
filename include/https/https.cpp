@@ -87,8 +87,21 @@ void https::listener(std::string ip, short enet_port)
 
                 if (SSL_read(ssl, buf, length) == length)
                 {
-                    if (std::string_view{buf, sizeof(buf )}.contains("POST /growtopia/server_data.php HTTP/1.1"))
-                        SSL_write(ssl, response.c_str(), response.size());
+                    std::string_view request{buf, sizeof(buf)};
+                    
+                    if (request.contains("POST /growtopia/server_data.php HTTP/1.1"))
+                    {
+                        bool valid_user_agent = request.contains("User-Agent: UbiServices_SDK_2022.Release.9_PC64_ansi_static");
+                        bool valid_content_type = request.contains("Content-Type: application/x-www-form-urlencoded");
+                        bool valid_host = request.contains("Host: www.growtopia1.com");
+                        bool valid_data = request.contains("version=") && request.contains("platform=") && request.contains("protocol=");
+                        
+                        if (valid_user_agent && valid_content_type && valid_host && valid_data)
+                        {
+                            SSL_write(ssl, response.c_str(), response.size());
+                        }
+                        else ERR_print_errors_fp(stderr);
+                    }
                 }
                 else ERR_print_errors_fp(stderr);
             }
